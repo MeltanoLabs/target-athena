@@ -9,13 +9,14 @@ from typing import List
 import tempfile
 
 from singer_sdk.sinks import Sink
+from singer_sdk.streams import Stream
 
 from target_athena import athena
 from target_athena import s3
 from target_athena import utils
 
 
-class AthenaSink(Sink):
+class AthenaSink(Sink, Stream):
     """Athena target sink class."""
 
     DEFAULT_BATCH_SIZE_ROWS = 10000
