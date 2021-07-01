@@ -30,7 +30,6 @@ class AthenaSink(Sink):
         super().__init__(target=target, stream_name=stream_name, schema=schema, key_properties=key_properties)
         self._s3_client = None
         self._athena_client = None
-
         ddl = athena.generate_create_database_ddl(self.config["athena_database"])
         athena.execute_sql(ddl, self.athena_client)
 
@@ -45,6 +44,10 @@ class AthenaSink(Sink):
         if not self._athena_client:
             self._athena_client = athena.create_client(self.config, self.logger)
         return self._athena_client
+    
+    @property
+    def datetime_error_treatment(self):
+        return self.config.get("datetime_error_treatment", "ERROR")
 
     def drain(self, records_to_drain: List[dict]) -> None:
         """Write any prepped records out and return only once fully written."""
