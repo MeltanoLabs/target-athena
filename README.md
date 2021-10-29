@@ -25,7 +25,7 @@ It's recommended to use a virtualenv:
 
 ```bash
   python3 -m venv venv
-  pip install git+https://github.com/dataops-tk/target-athena.git
+  pip install git+https://github.com/MeltanoLabs/target-athena.git
 ```
 
 or

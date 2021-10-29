@@ -168,7 +168,7 @@ def generate_create_table_ddl(
     database="default",
     external=True,
     row_format="org.apache.hadoop.hive.serde2.OpenCSVSerde",
-    serdeproperties = None,
+    serdeproperties = "'case.insensitive'='true'",
     skip_header = True,
 ):
     """Generate DDL for Hive table creation.
