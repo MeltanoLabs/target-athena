@@ -22,7 +22,7 @@ class TargetAthena(Target):
         th.Property("aws_profile", th.StringType),
         th.Property("s3_key_prefix", th.StringType),
         th.Property("naming_convention", th.StringType),
-        th.Property("object_format", th.StringType, default='csv'),
+        th.Property("object_format", th.StringType, default='jsonl'),
         th.Property("compression", th.StringType, default='gzip'),
         th.Property("encryption_type", th.StringType),
         th.Property("encryption_key", th.StringType),
