@@ -53,12 +53,7 @@ def flatten_record(d, parent_key=[], sep="__"):
     return dict(items)
 
 
-def get_target_key(stream_name, object_format, prefix="", timestamp=None, naming_convention=None):
+def get_target_key(stream_name, object_format, key_stem, prefix="", naming_convention=None):
     """Creates and returns an S3 key for the message"""
 
-    if not timestamp:
-        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-
-    key = f"{prefix}{stream_name}/{timestamp}.{object_format}"
-
-    return key 
+    return f"{prefix}{stream_name}/{key_stem}.{object_format}"

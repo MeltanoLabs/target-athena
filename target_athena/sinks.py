@@ -70,6 +70,7 @@ class AthenaSink(BatchSink):
 
         filenames = []
         now = datetime.now().strftime("%Y%m%dT%H%M%S")
+        key_stem = self.config.get("s3_key_stem", None) or now
 
         # Serialize records to local files
         for record in records_to_drain:
@@ -83,7 +84,7 @@ class AthenaSink(BatchSink):
                 self.stream_name,
                 object_format,
                 prefix=s3_prefix,
-                timestamp=now,
+                key_stem=key_stem,
                 # naming_convention=self.config.get("naming_convention"),
             )
             if not (filename, target_key) in filenames:
