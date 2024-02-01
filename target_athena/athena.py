@@ -40,6 +40,7 @@ def create_client(config, logger: Logger):
         cursor = connect(
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
+            aws_session_token=aws_session_token,
             region_name=aws_region,
             s3_staging_dir=s3_staging_dir,
             work_group=athena_workgroup,

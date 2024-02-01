@@ -77,10 +77,12 @@ class TestIntegration(unittest.TestCase):
             # Move aws access key and secret from config into environment variables
             os.environ['AWS_ACCESS_KEY_ID'] = os.environ.get('TARGET_ATHENA_ACCESS_KEY_ID')
             os.environ['AWS_SECRET_ACCESS_KEY'] = os.environ.get('TARGET_ATHENA_SECRET_ACCESS_KEY')
+            os.environ['AWS_SESSION_TOKEN'] = os.environ.get('TARGET_ATHENA_SESSION_TOKEN')
 
             config_aws_env_vars = self.config.copy()
             config_aws_env_vars['aws_access_key_id'] = None
             config_aws_env_vars['aws_secret_access_key'] = None
+            config_aws_env_vars['aws_session_token'] = None
 
             # Create a new S3 client using env vars
             self.persist_messages(tap_lines)
@@ -89,6 +91,7 @@ class TestIntegration(unittest.TestCase):
         finally:
             del os.environ['AWS_ACCESS_KEY_ID']
             del os.environ['AWS_SECRET_ACCESS_KEY']
+            del os.environ['AWS_SESSION_TOKEN']
 
     def test_profile_based_auth(self):
         """Test AWS profile based authentication rather than access keys"""
