@@ -203,9 +203,9 @@ def generate_create_table_ddl(
         "ROW FORMAT SERDE '{serde}'".format(serde=row_format) if row_format else ""
     )
     partition = None
-    if partition_key:
-        # TODO: support other data types
-        partition = f"\nPARTITIONED BY ({partition_key} string)"
+    # if partition_key:
+    #     # TODO: support other data types and partition key needs to be last in list
+    #     partition = f"\nPARTITIONED BY ({partition_key} string)"
     stored = "\nSTORED AS TEXTFILE"
     serdeproperties = (
         "\nWITH SERDEPROPERTIES ({})".format(serdeproperties) if serdeproperties else ""
