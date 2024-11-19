@@ -178,6 +178,7 @@ def generate_create_table_ddl(
     row_format="org.apache.hadoop.hive.serde2.OpenCSVSerde",
     serdeproperties="'case.insensitive'='true'",
     skip_header=True,
+    partition_key=None,
 ):
     """Generate DDL for Hive table creation.
 
@@ -201,6 +202,10 @@ def generate_create_table_ddl(
     row_format = (
         "ROW FORMAT SERDE '{serde}'".format(serde=row_format) if row_format else ""
     )
+    partition = None
+    if partition_key:
+        # TODO: support other data types
+        partition = f"\nPARTITIONED BY ({partition_key} string)"
     stored = "\nSTORED AS TEXTFILE"
     serdeproperties = (
         "\nWITH SERDEPROPERTIES ({})".format(serdeproperties) if serdeproperties else ""
@@ -212,70 +217,16 @@ def generate_create_table_ddl(
     statement = """CREATE {external_marker}TABLE IF NOT EXISTS {database}.{table} (
 {field_definitions}
 )
-{row_format}{serdeproperties}{stored}{location}{tblproperties};""".format(
+{row_format}{serdeproperties}{partition}{stored}{location}{tblproperties};""".format(
         external_marker=external_marker,
         database=database,
         table=table,
         field_definitions=field_definitions,
         row_format=row_format,
         serdeproperties=serdeproperties,
+        partition=partition,
         stored=stored,
         location=location,
         tblproperties=tblproperties,
     )
     return statement
-
-
-def create_or_replace_table(
-    client,
-    table,
-    schema,
-    headers=None,
-    data_location="",
-    database="default",
-    external=True,
-    row_format="org.apache.hadoop.hive.serde2.OpenCSVSerde",
-    skip_header=True,
-):
-    if table_exists(athena_client=client, database=database, table_name=table):
-        # alter table prefix
-        alter_table = "ALTER TABLE {database}.{table} ".format(database, table)
-
-        # update row_format
-        # NOTE: this does not seem to be supported in Athena
-        # execute_sql(ddl, client)
-
-        # update columns
-        if not headers:
-            field_definitions = generate_column_definitions(schema["properties"])
-        else:
-            field_definitions = ", ".join(["`{}` STRING".format(_) for _ in headers])
-        ddl = alter_table + "REPLACE COLUMNS (field_definitions}".format(
-            field_definitions
-        )
-        execute_sql(ddl, client)
-
-        # update location
-        ddl = alter_table + "SET LOCATION '{data_location}'".format(data_location)
-        execute_sql(ddl, client)
-
-        # skip_header
-        ddl = (
-            alter_table
-            + "SET TBLPROPERTIES ('skip.header.line.count'='{skip}');".format(
-                skip=int(skip_header)
-            )
-        )
-        execute_sql(ddl, client)
-
-    else:
-        ddl = generate_create_table_ddl(
-            table=table,
-            schema=schema,
-            headers=headers,
-            database=database,
-            data_location=data_location,
-            skip_header=skip_header,
-            row_format=row_format,
-        )
-        execute_sql(ddl, client)

@@ -34,6 +34,21 @@ class AthenaSink(BatchSink):
         ddl = athena.generate_create_database_ddl(self.config["athena_database"])
         athena.execute_sql(ddl, self.athena_client)
 
+    def get_partition_key(self) -> str | None:
+        """Get the partition key for a given stream name.
+        
+        Args:
+            stream_name: The name of the stream to get the partition key for.
+            
+        Returns:
+            The partition key if found for the stream, None otherwise.
+        """
+        partition_config = self.config.get("partition_config", [])
+        for config in partition_config:
+            if config["stream_name"] == self.stream_name:
+                return config["partition_key"]
+        return None
+
     @property
     def s3_client(self):
         if not self._s3_client:
@@ -88,7 +103,7 @@ class AthenaSink(BatchSink):
                 object_format,
                 prefix=s3_prefix,
                 timestamp=now,
-                # naming_convention=self.config.get("naming_convention"),
+                partition_key=self.get_partition_key(),
             )
             if not (filename, target_key) in filenames:
                 filenames.append((filename, target_key))
@@ -134,6 +149,7 @@ class AthenaSink(BatchSink):
                 database=self.config.get("athena_database"),
                 data_location=data_location,
                 row_format="org.apache.hadoop.hive.serde2.OpenCSVSerde",
+                partition_key=self.get_partition_key(),
             )
         elif object_format == 'jsonl':
             ddl = athena.generate_create_table_ddl(
@@ -144,7 +160,8 @@ class AthenaSink(BatchSink):
                 data_location=data_location,
                 skip_header=False,
                 row_format="org.openx.data.jsonserde.JsonSerDe",
-                serdeproperties="'ignore.malformed.json'='true', 'case.insensitive'='true'"
+                serdeproperties="'ignore.malformed.json'='true', 'case.insensitive'='true'",
+                partition_key=self.get_partition_key(),
             )
         else:
             self.logger.warn(f"Unrecognized format: '{object_format}'")

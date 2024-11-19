@@ -34,6 +34,17 @@ class TargetAthena(Target):
         th.Property("stream_maps", th.ObjectType()),
         th.Property("stream_map_config", th.ObjectType()),
         th.Property("athena_workgroup", th.StringType, default="primary"),
+        th.Property(
+            "partition_config",
+            th.ArrayType(
+                th.ObjectType(
+                    th.Property("stream_name", th.StringType, required=True),
+                    th.Property("partition_key", th.StringType, required=True),
+                )
+            ),
+            description="Configuration for partitioning data in S3. Each object should specify "
+                      "the stream name and the key to use for partitioning."
+        ),
     ).to_dict()
     default_sink_class = AthenaSink
 
