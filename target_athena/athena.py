@@ -202,7 +202,7 @@ def generate_create_table_ddl(
     row_format = (
         "ROW FORMAT SERDE '{serde}'".format(serde=row_format) if row_format else ""
     )
-    partition = None
+    partition = ""
     # if partition_key:
     #     # TODO: support other data types and partition key needs to be last in list
     #     partition = f"\nPARTITIONED BY ({partition_key} string)"
