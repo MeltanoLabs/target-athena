@@ -1,10 +1,10 @@
 import os
 import backoff
 import boto3
-import singer
 from botocore.exceptions import ClientError
+import logging
 
-LOGGER = singer.get_logger('target_athena')
+LOGGER = logging.getLogger('target_athena')
 
 
 def retry_pattern():

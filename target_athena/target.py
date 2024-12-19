@@ -39,3 +39,6 @@ class TargetAthena(Target):
 
 
 cli = TargetAthena.cli
+
+if __name__ == "__main__":
+   TargetAthena.cli()
