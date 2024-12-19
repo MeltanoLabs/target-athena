@@ -42,6 +42,7 @@ def create_client(config, logger: Logger):
             region_name=aws_region,
             s3_staging_dir=s3_staging_dir,
             work_group=athena_workgroup,
+            aws_session_token=aws_session_token,
         ).cursor()
 
     # AWS Profile based authentication
